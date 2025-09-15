@@ -1,0 +1,369 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EcoQuest — Gamified Environmental Education</title>
+  <meta name="description" content="Gamified environmental education platform for schools & colleges. Quizzes, badges, leaderboards, missions and progress tracking." />
+  <style>
+    :root{
+      --bg:#0f1724; /* deep navy */
+      --card:#0b1220;
+      --muted:#94a3b8;
+      --accent:#16a34a; /* green */
+      --accent-2:#06b6d4; /* teal */
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02);
+      --radius:14px;
+      --ff: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--ff);
+      background:linear-gradient(180deg,var(--bg) 0%, #071021 100%);
+      color:#e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:28px;
+    }
+
+    /* App layout */
+    .app{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
+
+    /* Sidebar */
+    .sidebar{background:linear-gradient(180deg,var(--card), #071226);padding:20px;border-radius:16px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700}
+    .brand h1{font-size:18px;margin:0}
+    .brand p{margin:0;color:var(--muted);font-size:12px}
+
+    .nav{margin-top:12px}
+    .nav a{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;color:inherit;text-decoration:none;margin-bottom:6px}
+    .nav a:hover{background:var(--glass)}
+    .nav a.active{background:linear-gradient(90deg, rgba(22,163,74,0.12), rgba(6,182,212,0.06));box-shadow:inset 0 -1px 0 rgba(255,255,255,0.02)}
+
+    .profile{display:flex;gap:12px;align-items:center;margin-top:18px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.03)}
+    .avatar{width:48px;height:48px;border-radius:10px;background:linear-gradient(180deg,#08321d,#0b4a30);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Main content */
+    .main{min-height:80vh}
+    .top{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:18px}
+    .welcome{background:linear-gradient(135deg, rgba(22,163,74,0.08), rgba(6,182,212,0.04));padding:18px;border-radius:16px;flex:1;display:flex;gap:18px;align-items:center}
+    .welcome .meta{flex:1}
+    .welcome h2{margin:0 0 6px 0}
+    .welcome p{margin:0;color:var(--muted)}
+    .cta{background:var(--accent);padding:10px 14px;border-radius:10px;color:#00110a;font-weight:600;border:none;cursor:pointer}
+
+    /* Cards grid */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:linear-gradient(180deg,var(--card), #091424);padding:16px;border-radius:14px;box-shadow:0 6px 20px rgba(1,6,12,0.6)}
+
+    /* Progress / Level */
+    .progress-wrap{display:flex;gap:16px;align-items:center}
+    .progress{flex:1}
+    .meter{height:12px;background:var(--glass-2);border-radius:999px;overflow:hidden}
+    .meter > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:45%;transition:width 700ms cubic-bezier(.2,.9,.2,1)}
+    .level-badge{min-width:86px;padding:8px 10px;border-radius:10px;background:linear-gradient(180deg,#071a12,#0b2619);text-align:center}
+    .level-badge h3{margin:0;font-size:14px}
+    .small-muted{font-size:12px;color:var(--muted)}
+
+    /* Missions */
+    .missions-list{display:flex;flex-direction:column;gap:10px}
+    .mission{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent)}
+    .mission .title{font-weight:600}
+    .mission .meta{font-size:13px;color:var(--muted)}
+    .btn-small{padding:8px 10px;border-radius:8px;border:none;background:rgba(227, 221, 221, 0.03);cursor:pointer}
+    .btn-small.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#00110a}
+
+    /* Badges */
+    .badges{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{width:88px;height:88px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .badge .icon{font-size:22px;margin-bottom:6px}
+    .badge.locked{opacity:0.28;filter:grayscale(60%)}
+
+    /* Leaderboard */
+    .leaderboard table{width:100%;border-collapse:collapse}
+    .leaderboard th, .leaderboard td{padding:8px;text-align:left;border-bottom:1px dashed rgba(255,255,255,0.03)}
+    .rank{font-weight:700;min-width:46px}
+
+    /* Quiz preview */
+    .quiz{display:grid;grid-template-columns:1fr 140px;gap:12px;align-items:center}
+    .quiz .q{font-weight:600}
+    .start-quiz{padding:10px;border-radius:10px;border:none;background:transparent;cursor:pointer}
+
+    /* Footer small */
+    .foot{color:var(--muted);font-size:12px;margin-top:12px}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .app{grid-template-columns:1fr;}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:640px){
+      .grid{grid-template-columns:1fr}
+      .welcome{flex-direction:column;align-items:start}
+    }
+
+    /* micro interactions */
+    .pulse{animation:pop 1600ms infinite}
+    @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+
+    /* accessible focus */
+    a:focus, button:focus{outline:3px solid rgba(6,182,212,0.18);outline-offset:3px}
+
+    /* small utilities */
+    .muted{color:var(--muted)}
+    .flex{display:flex}
+    .center{align-items:center}
+    
+
+    .btn-small:hover
+    {
+        border-bottom: 3px solid red;
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="EcoQuest dashboard">
+    <aside class="sidebar" aria-label="Main sidebar">
+      <div class="brand" role="banner">
+        <div class="logo">EQ</div>
+        <div>
+          <h1>EcoQuest</h1>
+          <p>Learn. Play. Protect.</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#" class="active" aria-current="page">🏠 Dashboard</a>
+        <a href="#missions">🧭 Missions</a>
+        <a href="#quizzes">❓ Quizzes</a>
+        <a href="#badges">🏅 Badges</a>
+        <a href="#leaderboard">📊 Leaderboard</a>
+        <a href="#resources">📚 Resources</a>
+      </nav>
+
+      <div class="profile">
+        <div class="avatar">A</div>
+        <div>
+          <div style="font-weight:700">Ajay</div>
+          <div class="small-muted">Grade 12 • 1,420 XP</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <div class="small-muted">Weekly challenge</div>
+        <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
+          <div style="flex:1;background:linear-gradient(90deg,var(--accent),var(--accent-2));height:8px;border-radius:999px"></div>
+          <div class="small-muted">60%</div>
+        </div>
+      </div>
+
+      <div class="foot">Built for schools & colleges • Accessible • Offline-ready (PWA-ready layout)</div>
+    </aside>
+
+    <main class="main">
+      <div class="top">
+        <div class="welcome card" role="region" aria-label="Welcome panel">
+          <div class="meta">
+            <h2>Welcome back, Ajay!</h2>
+            <p>Complete missions, answer quizzes, and collect badges to level up and compete on the leaderboard.</p>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="cta">Start today's mission</button>
+              <button class="btn-small" style="background-color: whitesmoke;">Explore lessons</button>
+            </div>
+          </div>
+          <div style="min-width:140px;text-align:right">
+            <div class="small-muted">Current Streak</div>
+            <div style="font-weight:800;font-size:20px">7 days</div>
+            <div style="margin-top:10px"><small class="muted">Next reward: 150 XP</small></div>
+          </div>
+        </div>
+
+        <div style="width:320px;display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <div class="progress-wrap">
+              <div class="progress">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                  <div class="small-muted">Level 6 — Forest Guardian</div>
+                  <div class="small-muted">XP 1,420 / 3,000</div>
+                </div>
+                <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="3000" aria-valuenow="1420">
+                  <i style="width:47%"></i>
+                </div>
+              </div>
+              <div class="level-badge">
+                <h3>Lvl 6</h3>
+                <div class="small-muted">Forest</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="small-muted">Daily Quests</div>
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <div style="flex:1">Recycle items • Plant a seed</div>
+              <div style="min-width:68px;text-align:right"><button class="btn-small primary">Do now</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section style="margin-bottom:18px">
+        <div class="grid">
+          <div class="card" id="missions">
+            <h3 style="margin-top:0">Active Missions</h3>
+            <div class="missions-list" aria-live="polite">
+              <div class="mission">
+                <div>
+                  <div class="title">Community Clean-up</div>
+                  <div class="meta">Collect 10 trash items • 40 XP</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="small-muted">2d left</div>
+                  <button class="btn-small primary">Start</button>
+                </div>
+              </div>
+
+              <div class="mission">
+                <div>
+                  <div class="title">Tree Mapping</div>
+                  <div class="meta">Map 5 trees in your area • 60 XP</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="small-muted">4d left</div>
+                  <button class="btn-small" style="background-color: white;">Preview</button>
+                </div>
+              </div>
+
+              <div class="mission">
+                <div>
+                  <div class="title">Energy Audit</div>
+                  <div class="meta">Identify 3 energy leaks • 30 XP</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="small-muted">6d left</div>
+                  <button class="btn-small" style="background-color:whitesmoke ;">Preview</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="quizzes">
+            <h3 style="margin-top:0">Quick Quiz</h3>
+            <div class="quiz">
+              <div>
+                <div class="q">What's the most effective way to reduce household water waste?</div>
+                <div class="small-muted">4 questions • 3 mins • 20 XP</div>
+              </div>
+              <div style="text-align:right">
+                <button class="start-quiz btn-small primary">Start Quiz</button>
+              </div>
+            </div>
+
+            <hr style="border:none;border-top:1px dashed rgba(255,255,255,0.03);margin:12px 0" />
+            <div class="small-muted">Recent Results</div>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+              <div style="flex:1" class="small-muted">You: 85% • +34 XP</div>
+              <div style="width:80px;text-align:right"><button class="btn-small" style="background-color: white;">Review</button></div>
+            </div>
+          </div>
+
+          <div class="card" id="badges">
+            <h3 style="margin-top:0">Badges</h3>
+            <div class="badges" aria-live="polite">
+              <div class="badge">
+                <div class="icon">🌱</div>
+                <div class="small-muted">Planter</div>
+              </div>
+              <div class="badge pulse">
+                <div class="icon">🏆</div>
+                <div class="small-muted">Champion</div>
+              </div>
+              <div class="badge locked">
+                <div class="icon">🔒</div>
+                <div class="small-muted">Ocean Savior</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card leaderboard" id="leaderboard">
+            <h3 style="margin-top:0">Leaderboard</h3>
+            <table role="table" aria-label="Leaderboard table">
+              <thead>
+                <tr><th>Rank</th><th>Student</th><th>XP</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="rank">1</td><td>Priya</td><td>3,850</td></tr>
+                <tr><td class="rank">2</td><td>Rahul</td><td>3,020</td></tr>
+                <tr><td class="rank">3</td><td>Ajay</td><td>1,420</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-top:0">Resources</h3>
+            <ul style="margin:8px 0 0 18px;color:var(--muted);">
+              <li>Interactive lesson: Urban biodiversity</li>
+              <li>PDF: Waste segregation guide</li>
+              <li>Video: How to start a compost</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-top:0">Teacher Mode (Preview)</h3>
+            <div class="small-muted">Assign missions, view class progress, export CSV.</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn-small" style="background-color: whitesmoke;">Assign</button>
+              <button class="btn-small" style="background-color: whitesmoke;">Export</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="display:flex;gap:14px;align-items:center">
+        <div class="card" style="flex:1">
+          <h3 style="margin-top:0">Weekly Insight</h3>
+          <p class="small-muted">This week, students completed 450 missions. Focus: water saving techniques increased by 22%.</p>
+        </div>
+
+        <div class="card" style="width:300px">
+          <h3 style="margin-top:0">Quick Actions</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <button class="btn-small" style="background-color: whitesmoke;">New Mission</button>
+            <button class="btn-small" style="background-color: goldenrod;">Create Quiz</button>
+            <button class="btn-small" style="background-color: white;">Invite Class</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Small progressive enhancement: animate XP meter when page loads
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const meter = document.querySelector('.meter > i');
+      if(!meter) return;
+      // Simulated XP percent (replace with real data in integration)
+      const percent = 47; // 0-100
+      requestAnimationFrame(()=>{
+        meter.style.width = percent + '%';
+      });
+
+      // Simple keyboard shortcut: press Q to open quick quiz (demonstration)
+      window.addEventListener('keydown', (e)=>{
+        if(e.key.toLowerCase()==='q'){
+          const btn = document.querySelector('.start-quiz');
+          if(btn) btn.classList.add('pulse');
+          setTimeout(()=>btn && btn.classList.remove('pulse'),800);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
